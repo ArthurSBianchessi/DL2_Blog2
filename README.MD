@@ -1,6 +1,6 @@
 # Lightning Blog Post
 
-Pytorch Lightning is a PyTorch wrapper for high-performance AI research built on top of PyTorch. Lightning abstracts a lot of the boilerplate code that would normally have to be writen in PyTorch. It also provides a lot of pre-built functionalities that can be used to train models. In this blog post, it will be discussed how to use PyTorch Lightning to train a model, and what are the advantages it brings.
+Pytorch Lightning is a PyTorch wrapper for high-performance AI research built on top of PyTorch. Lightning abstracts a lot of the boilerplate code that would normally have to be writen in PyTorch. It also provides a lot of pre-built functionalities that can be used to train models. In this blog post, it will be discussed how to use PyTorch Lightning to train, validate and test of deeplearning models.
 
 ## Installation
 
@@ -12,9 +12,9 @@ pip install lightning
 
 ## Usage
 
-The main use for *Lightning* is to train and validate models. For convenience, this post will separate this functionality into two parts: the model class and the trainer.
+*Lightning* has many functionalities that can be used either to train, validate, test or even optimize models. The main classes that are used in *Lightning* are the model class and the trainer class. The model class is where the architecture of the model is defined, and the trainer class is where the training process is defined. So, for convenience, this blog will structure the explanation of the *Lightning* framework in two parts: the model and the trainer.
 
-### Model
+## Model
 
 The model class is where the architecture of the model is defined. It is a subclass of `L.LightningModule`. The model class should have the following methods:
 
@@ -117,7 +117,7 @@ There are many more methods that can be implemented in the model class such as `
 
 
 
-### Trainer
+## Trainer
 
 `lightning.Trainer` is the class that is used to train the model. Contrary to the model class, the trainer is already implemented in *Lightning*. It is a class that is instantiated in the main script and is used to train the model. The trainer class has many arguments that can be used to customize the training process. Yet, none of them are required. The basic usage of the trainer is to instantiate it and call the `fit` method. The `fit` method takes the model and the dataloaders as arguments. The basic usage of the trainer is as follows:
 
@@ -222,19 +222,19 @@ trainer.fit(model)
 Yet one of the main advantage of *Lightning* is abstracts not only the training process, but also many other functionalities. For example, the model can be trained with a progress bar, early stopping, tensorboard logging and model checkpointing with the following code:
 
 ```python
-model               = ConvNet()
-trainer             = L.Trainer(
-                            max_epochs=100, enable_progress_bar=True, devices=1,
-                            callbacks=[
-                                EarlyStopping(monitor="val_loss", patience=5), 
-                                TQDMProgressBar(refresh_rate=10),
-                                ModelCheckpoint(filename='{epoch}_{step}_{val_loss:.4f}_val_acc={val_acc:.4f}', save_top_k=3, monitor='val_loss')
-                                ],
-                            logger=[
-                                CSVLogger(        "logs/", name='csv/'),
-                                TensorBoardLogger("logs/", name='tensorboard/'),
-                                ]
-                            )
+model = ConvNet()
+trainer = L.Trainer(
+            max_epochs=100, enable_progress_bar=True, devices=1,
+            callbacks=[
+                EarlyStopping(monitor="val_loss", patience=5), 
+                TQDMProgressBar(refresh_rate=10),
+                ModelCheckpoint(filename='{epoch}_{step}_{val_loss:.4f}_val_acc={val_acc:.4f}', save_top_k=3, monitor='val_loss')
+                ],
+            logger=[
+                CSVLogger(        "logs/", name='csv/'),
+                TensorBoardLogger("logs/", name='tensorboard/'),
+                ]
+            )
 trainer.fit(model)
 ```
 
@@ -272,7 +272,7 @@ Since `CSVLogger` was also used, the training process can also manually be visua
 import pandas as pd
 import plotly.express as px
 
-df = pd.read_csv("logs/csv/version_0/metrics.csv")
+df                  = pd.read_csv("logs/csv/version_0/metrics.csv")
 train_losses_step   = df[df['train_loss_step' ].notna()].copy()
 train_losses_epoch  = df[df['train_loss_epoch'].notna()].copy()
 val_losses          = df[df['val_loss'        ].notna()].copy()
@@ -298,3 +298,5 @@ In this case, the process is considerably more manual than using tensorboard, bu
 ## Conclusion
 
 In this blog post, it was discussed how to use PyTorch Lightning to train a model. It was shown how to define a model class and a trainer class, and how to train a model with them. It was also shown how to use some of the functionalities that *Lightning* provides, such as early stopping, model checkpointing, tensorboard logging and csv logging. It was also shown how to visualize the training process with tensorboard and with csv files. *Lightning* is a very powerful tool that can be used to train models in a very efficient way. It abstracts a lot of the boilerplate code that would normally have to be written in PyTorch, and provides a lot of functionalities that can be used to train models. It is a very useful tool that can be used to train models in a very efficient way.
+
+Example code used in this blog can be found at [this repository](https://github.com/ArthurSBianchessi/DL2_Blog2)
