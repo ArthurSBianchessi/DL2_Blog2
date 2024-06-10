@@ -240,6 +240,19 @@ trainer.fit(model)
 
 Passing such arguments to the trainer not only allows to implement functionalities such as early stopping, but also organizes files or reducing the ProgressBar refresh rate so it becomes more readable.
 
+After training the model, the model can be tested with the following code:
+
+```python
+trainer.test()
+```
+This allows to get the test loss and any other metric that was logged during the training process. It also automatically loads the best model checkpoint, so that the model that is tested is the best model that was trained.
+
+![Test Loss](./images/test_loss.png)
+
+
+
+
+
 ## Tensorboard
 With the tensorboard logger, the training process can be visualized in tensorboard. To visualize the training process in tensorboard, run the following command in the terminal:
 
@@ -247,6 +260,41 @@ With the tensorboard logger, the training process can be visualized in tensorboa
 tensorboard --logdir logs/tensorboard/
 ```
 
-This will start a tensorboard server that can be accessed in the browser at `localhost:6006`.
+This will start a tensorboard server that can be accessed in the browser at `localhost:6006`. In the example run, the following graphs were generated:
 
+![train Loss](./images/train_loss_step.png)
+![train Loss](./images/train_loss_epoch.png)
+![val Loss](./images/val_loss.png)
 
+Since `CSVLogger` was also used, the training process can also manually be visualized by reading the csv files that were generated. The csv files are saved in the `logs/csv/version_<number>` directory. The following code can be used to visualize the training process:
+
+```python
+import pandas as pd
+import plotly.express as px
+
+df = pd.read_csv("logs/csv/version_0/metrics.csv")
+train_losses_step   = df[df['train_loss_step' ].notna()].copy()
+train_losses_epoch  = df[df['train_loss_epoch'].notna()].copy()
+val_losses          = df[df['val_loss'        ].notna()].copy()
+test_losses         = df[df['test_loss'       ].notna()].copy()
+
+train_losses_step['Dataset']  = 'Train (Step)'
+train_losses_epoch['Dataset'] = 'Train (Epoch)'
+val_losses['Dataset']         = 'Val'
+test_losses['Dataset']        = 'Test'
+
+train_losses_step['Loss']    = train_losses_step['train_loss_step']
+train_losses_epoch['Loss']   = train_losses_epoch['train_loss_epoch']
+val_losses['Loss']           = val_losses['val_loss']
+test_losses['Loss']          = test_losses['test_loss']
+
+df = pd.concat([train_losses_step, train_losses_epoch, val_losses, test_losses])
+fig = px.line(df, x='step', y='Loss', color='Dataset', title='Losses').show()
+```
+![Losses](./images/all_losses.png)
+
+In this case, the process is considerably more manual than using tensorboard, but it comes to show that you can have varying levels of control with *Lightning*.
+
+## Conclusion
+
+In this blog post, it was discussed how to use PyTorch Lightning to train a model. It was shown how to define a model class and a trainer class, and how to train a model with them. It was also shown how to use some of the functionalities that *Lightning* provides, such as early stopping, model checkpointing, tensorboard logging and csv logging. It was also shown how to visualize the training process with tensorboard and with csv files. *Lightning* is a very powerful tool that can be used to train models in a very efficient way. It abstracts a lot of the boilerplate code that would normally have to be written in PyTorch, and provides a lot of functionalities that can be used to train models. It is a very useful tool that can be used to train models in a very efficient way.
