@@ -60,7 +60,7 @@ for batch_idx, batch in enumerate(train_dataloader):
 ```
 Extracted from [Lightning Documentation](https://lightning.ai/docs/pytorch/stable/common/lightning_module.html)
 
-
+### Extra Methods
 
 The model class can have other methods, a few examples are:
 - Other Forward Passes: 
@@ -74,33 +74,33 @@ The model class can have other methods, a few examples are:
     - `test_dataloader`: This is where the test dataloader is defined.
 
 - Callbacks (methods that are called at different points of the training process):
-    - on_fit_start
-    - on_train_start
-    - on_train_end
-    - on_fit_end
-    - on_train_epoch_start
-    - on_train_batch_start
-    - on_before_batch_transfer
-    - on_after_batch_transfer
-    - on_before_zero_grad
-    - on_before_backward
-    - on_after_backward
-    - on_before_optimizer_step
-    - on_train_batch_end
-    - on_train_epoch_end
-    - on_validation_model_eval  
-    - on_validation_start
-    - on_validation_epoch_start
-    - on_validation_batch_start
-    - on_before_batch_transfer
-    - on_after_batch_transfer
-    - validation_step
-    - on_validation_batch_end
-    - on_validation_epoch_end
-    - on_validation_end
-    - on_validation_model_train 
+    - `on_fit_start`
+    - `on_train_start`
+    - `on_train_end`
+    - `on_fit_end`
+    - `on_train_epoch_start`
+    - `on_train_batch_start`
+    - `on_before_batch_transfer`
+    - `on_after_batch_transfer`
+    - `on_before_zero_grad`
+    - `on_before_backward`
+    - `on_after_backward`
+    - `on_before_optimizer_step`
+    - `on_train_batch_end`
+    - `on_train_epoch_end`
+    - `on_validation_model_eval  `
+    - `on_validation_start`
+    - `on_validation_epoch_start`
+    - `on_validation_batch_start`
+    - `on_before_batch_transfer`
+    - `on_after_batch_transfer`
+    - `validation_step`
+    - `on_validation_batch_end`
+    - `on_validation_epoch_end`
+    - `on_validation_end`
+    - `on_validation_model_train `
 
-- Logging (altgough these generally are not implemented in the model class, they can be called from it)
+- Logging (altgough these generally are not implemented in the model class, they are called from it)
     - `log`
     - `log_dict`
     - `log_image`
@@ -119,7 +119,7 @@ There are many more methods that can be implemented in the model class such as `
 
 ## Trainer
 
-`lightning.Trainer` is the class that is used to train the model. Contrary to the model class, the trainer is already implemented in *Lightning*. It is a class that is instantiated in the main script and is used to train the model. The trainer class has many arguments that can be used to customize the training process. Yet, none of them are required. The basic usage of the trainer is to instantiate it and call the `fit` method. The `fit` method takes the model and the dataloaders as arguments. The basic usage of the trainer is as follows:
+`lightning.Trainer` is the class that is used to train the model. Contrary to the model class, the trainer is already implemented in *Lightning*. It is a class that is instantiated in the main script and is used to train the model. The trainer class has many arguments that can be used to customize the training process. Yet, none of them are required. The basic usage of the trainer is to instantiate it and call the `fit` method. The basic usage of the trainer is as follows:
 
 ```python
 model = Model()
@@ -127,12 +127,12 @@ trainer = Trainer()
 trainer.fit(model)    # Consider that train_dataloader is defined in the model class
 ```
 
-This code defines the model, defines the trainer and then trains the model in 3 lines of code! The trainer not only trains the model, but also saves any metric logged by the model and checkpoints of the model being trained. If the a validation dataloader is supplied to the trainer, either in the `fit` method or in the model class, it will also validate the model at the end of each epoch. The trainer can also be used to test the model and predict with the model. The trainer can also be used to resume training from a checkpoint. For a full list of arguments that can be passed to the trainer, check the [Lightning Documentation](https://lightning.ai/docs/pytorch/stable/common/trainer.html).
+This code defines the model and trainer, then trains the model in 3 lines of code! The trainer not only trains the model, but also saves any metric logged by the model and checkpoints of the model being trained. If the a validation dataloader is supplied to the trainer, either in the `fit` method or in the model class, it will also calculate, log, and monitor its metrics automatically. The trainer can also be used to test and predict with the model. It can also be used to resume training from a checkpoint. For a full list of arguments that can be passed to the trainer, check the [Lightning Documentation](https://lightning.ai/docs/pytorch/stable/common/trainer.html).
 
 
 ## Example
 
-For the following part consider the following imports:
+For the following section consider the imports:
 
 ```python
 import torch
@@ -147,7 +147,7 @@ from   lightning.pytorch.callbacks  import TQDMProgressBar, ModelCheckpoint
 from   lightning.pytorch.loggers    import TensorBoardLogger, CSVLogger
 ```
 
-To exemplify the usage of *Lightning*, a simple model will be trained to classify the MNIST dataset. The model will be a convolutional neural network with 4 convolutional layers, 2 pooling layers and 2 fully connected layers. The model will be trained for 10 epochs. The model will be defined in the following way:
+To exemplify the usage of *Lightning*, a simple model will be trained to classify the MNIST dataset. The model will be a convolutional neural network with 4 convolutional layers, 2 pooling layers and 2 fully connected layers. The model will be trained for 10 epochs, and then with early stopping. The model will be defined as follows:
 
 ```python
 class ConvNet(L.LightningModule):
@@ -219,7 +219,7 @@ trainer = Trainer(max_epochs=10)
 trainer.fit(model)
 ```
 
-Yet one of the main advantage of *Lightning* is abstracts not only the training process, but also many other functionalities. For example, the model can be trained with a progress bar, early stopping, tensorboard logging and model checkpointing with the following code:
+Yet one of the main advantage of *Lightning* is abstracts not only the training process, but also many other functionalities. For example, the model can be trained with a custom progress bar, early stopping, tensorboard logging and best model checkpointing with the following code:
 
 ```python
 model = ConvNet()
@@ -297,6 +297,6 @@ In this case, the process is considerably more manual than using tensorboard, bu
 
 ## Conclusion
 
-In this blog post, it was discussed how to use PyTorch Lightning to train a model. It was shown how to define a model class and a trainer class, and how to train a model with them. It was also shown how to use some of the functionalities that *Lightning* provides, such as early stopping, model checkpointing, tensorboard logging and csv logging. It was also shown how to visualize the training process with tensorboard and with csv files. *Lightning* is a very powerful tool that can be used to train models in a very efficient way. It abstracts a lot of the boilerplate code that would normally have to be written in PyTorch, and provides a lot of functionalities that can be used to train models. It is a very useful tool that can be used to train models in a very efficient way.
+In this blog post, it was discussed how to use PyTorch Lightning to train a model. It was shown how to define a model class and a trainer class, and how to train a model with them. It was also shown how to use some of the functionalities that *Lightning* provides, such as early stopping, model checkpointing, tensorboard logging and csv logging. *Lightning* is a very powerful tool that can be used to train models in a very efficient way. It abstracts a lot of the boilerplate code that would normally have to be written in PyTorch, and provides a lot of functionalities that can be used to train models. Although the default training loop in pytorch is not very complex, *Lightning* helps to abstract not only the basic loop but functionalities such as early stopping or model checkpointing, that becomes highly time consuming to implement every time. 
 
 Example code used in this blog can be found at [this repository](https://github.com/ArthurSBianchessi/DL2_Blog2)
