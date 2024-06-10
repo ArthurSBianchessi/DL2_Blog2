@@ -16,14 +16,14 @@ pip install lightning
 
 ## Model
 
-The model class is where the architecture of the model is defined. It is a subclass of `L.LightningModule`. The model class should have the following methods:
+<!-- The model class is where the architecture of the model is defined. It is a subclass of `L.LightningModule`. The model class should have the following methods: -->
+The model class is where the architecture of the model is defined. It is a subclass of `L.LightningModule`, which is a subclass of `torch.nn.Module`. For compatibility with the *Lightning* trainer, the model class should have at least the following methods:
 
 - `__init__`: As any class, the model class should have an `__init__` method. This is where the model is defined.
 - `training_step`: This is where the training step is defined. It should return the loss.
 - `configure_optimizers`: This is where the optimizer is defined.
-- `forward`: This is where the forward pass is defined. (Recommended, but not required)
 
-This methods are the minimum required to train a model with *Lightning*, `training_step` is required to get the loss and `configure_optimizers` is required to define the optimizer, so that the trainer can update the model. Therefore the basic model class should look like this:
+This methods are the minimum required to train a model with *Lightning*. Here is a template of a model class:
 
 ```python
 class Model(LightningModule):
@@ -40,7 +40,7 @@ class Model(LightningModule):
         return optimizer
 ```
 
-Ths methods are required so that lightning can implement the functionality of the following pseudo code:
+Ths methods are required so that lightning can implement the functionality of a basic training loop. The `training_step` method is where the forward pass is defined and the loss is calculated, while the `configure_optimizers` method is where the optimizer is defined. with these two methods, *Lightning* run the forward pass, calculate the loss, backpropagate the loss and update the parameters. The following pseudo-code represents the functionality of the training loop implemented by *Lightning*:
 
 ```python
 # enable gradient calculation
